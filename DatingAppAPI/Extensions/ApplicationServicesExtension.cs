@@ -5,6 +5,7 @@ using Repository.Layer;
 using Repository.Layer.Interfaces;
 using Services.Layer.Account;
 using Services.Layer.Identity;
+using Services.Layer.Token;
 
 namespace DatingAppAPI.Extensions
 {
@@ -16,10 +17,13 @@ namespace DatingAppAPI.Extensions
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
-            services.AddControllers();
             services.AddHttpContextAccessor();
 
             services.AddScoped<ExceptionMiddleware>();
+
+            services.AddScoped<IAccountService, AccountService>();
+
+            services.AddScoped<ITokenService, TokenService>();
 
             // Register the CORS
             services.AddCors(opt =>
@@ -27,7 +31,7 @@ namespace DatingAppAPI.Extensions
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
-                    "http://localhost:4200", 
+                    "http://localhost:4200",
                     "https://localhost:4200",
                     "http://localhost:3000",
                     "https://localhost:3000"); // angular and react
