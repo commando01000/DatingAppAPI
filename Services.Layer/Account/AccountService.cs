@@ -4,7 +4,9 @@ using Data.Layer.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Repository.Layer.Interfaces;
 using Services.Layer.DTOs;
+using Services.Layer.DTOs.Account;
 using Services.Layer.Identity;
+using Services.Layer.Token;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +19,12 @@ namespace Services.Layer.Account
     public class AccountService : IAccountService
     {
         private readonly UserManager<AppUser> _userManager;
-        public AccountService(UserManager<AppUser> userManager)
+        private readonly ITokenService _tokenService;
+
+        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
         public async Task<Response<IEnumerable<UserDTO>>> GetAllUsers()
         {
@@ -77,6 +82,114 @@ namespace Services.Layer.Account
                 StatusCode = (int)HttpStatusCode.OK,
                 RedirectURL = null
             };
+        }
+
+        public async Task<Response<Nothing>> LoginUser(LoginDTO userDTO)
+        {
+            if (userDTO.Email == null || userDTO.Password == null)
+            {
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "Email or Password is null",
+                    Status = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    RedirectURL = null
+                };
+            }
+
+            var user = await _userManager.FindByEmailAsync(userDTO.Email);
+
+            if (user == null)
+            {
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "User does not exist",
+                    Status = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    RedirectURL = null
+                };
+            }
+
+            var result = await _userManager.CheckPasswordAsync(user, userDTO.Password);
+
+            if (result)
+            {
+                // Generate JWT Token
+                var token = await _tokenService.GenerateAccessToken(user);
+
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "Success",
+                    Status = true,
+                    Token = token,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    RedirectURL = null
+                    //RedirectURL = $"http://localhost:4200/external-login-callback?token={token}" // TODO: Change this in external login
+                };
+            }
+
+            return new Response<Nothing>()
+            {
+                Data = null,
+                Message = "Password is incorrect",
+                Status = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                RedirectURL = null
+            };
+        }
+
+        public async Task<Response<UserDTO>> RegisterUser(RegisterDTO userDTO)
+        {
+            var isUserExists = await _userManager.FindByEmailAsync(userDTO.Email);
+            if (userDTO.Password == userDTO.RePassword && isUserExists == null) // check if passwords match and user does not exist
+            {
+                var user = new AppUser()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = userDTO.Username,
+                    Email = userDTO.Email,
+                    Bio = userDTO.Bio,
+                    DisplayName = userDTO.DisplayName,
+                    Address = userDTO.Address == null ? null : new Address()
+                    {
+                        City = userDTO.Address.City,
+                        Street = userDTO.Address.Street,
+                        Id = userDTO.Address.Id,
+                        State = userDTO.Address.State,
+                        ZipCode = userDTO.Address.ZipCode
+                    }
+                };
+
+                var result = await _userManager.CreateAsync(user, userDTO.Password);
+
+                var response = new Response<UserDTO>()
+                {
+                    Data = new UserDTO()
+                    {
+                        Id = user.Id,
+                    },
+                    Message = "Success",
+                    Status = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    RedirectURL = null,
+                };
+                return response;
+            }
+            else
+            {
+                return new Response<UserDTO>()
+                {
+                    Data = null,
+                    Message = "Passwords do not match",
+                    Status = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    RedirectURL = null
+                };
+            }
+
         }
     }
 }
