@@ -67,7 +67,6 @@ namespace DatingAppAPI
 
             app.UseAuthentication(); // Ensure this comes before Use Authorization
             app.UseAuthorization();
-
             app.MapControllers();
             
             app.Run();

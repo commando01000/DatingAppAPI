@@ -17,7 +17,7 @@ namespace DatingAppAPI.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> users()
         {
             var users = await _accountService.GetAllUsers();
             return Ok(users);

@@ -26,10 +26,14 @@ namespace DatingAppAPI.Extensions
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200", "https://localhost:3000"); // angular and react
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
+                    "http://localhost:4200", 
+                    "https://localhost:4200",
+                    "http://localhost:3000",
+                    "https://localhost:3000"); // angular and react
                 });
             });
-            
+
             // 🔹 Register UnitOfWork with AppDbContext
             services.AddScoped(typeof(IUnitOfWork<AppDbContext>), typeof(UnitOfWork<AppDbContext>));
 
