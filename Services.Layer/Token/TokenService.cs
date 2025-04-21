@@ -32,7 +32,7 @@ namespace Services.Layer.Token
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.DisplayName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim("Id", user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("Username", user.UserName),
             };
