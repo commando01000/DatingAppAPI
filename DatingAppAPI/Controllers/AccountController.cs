@@ -1,4 +1,5 @@
 ﻿using Common.Layer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Layer.DTOs;
@@ -9,6 +10,7 @@ namespace DatingAppAPI.Controllers
 {
     [Route("api/[controller]/[Action]")]
     [ApiController]
+
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -18,6 +20,7 @@ namespace DatingAppAPI.Controllers
             _accountService = accountService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> users()
         {
@@ -25,6 +28,7 @@ namespace DatingAppAPI.Controllers
             return Ok(users);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> register([FromBody] RegisterDTO registerDto)
         {
@@ -32,7 +36,16 @@ namespace DatingAppAPI.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> login([FromBody] LoginDTO loginDTO)
+        {
+            var result = await _accountService.LoginUser(loginDTO);
+            return Ok(result);
+        }
+
         // Get User By Id
+        [Authorize]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> user(Guid id)
         {
