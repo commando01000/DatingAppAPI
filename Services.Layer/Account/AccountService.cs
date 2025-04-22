@@ -152,12 +152,12 @@ namespace Services.Layer.Account
                     UserName = userDTO.Username,
                     Email = userDTO.Email,
                     Bio = userDTO.Bio,
-                    DisplayName = userDTO.DisplayName,
+                    DisplayName = userDTO.DisplayName == null ? userDTO.Username : userDTO.DisplayName,
                     Address = userDTO.Address == null ? null : new Address()
                     {
                         City = userDTO.Address.City,
                         Street = userDTO.Address.Street,
-                        Id = userDTO.Address.Id,
+                        Id = Guid.NewGuid(),
                         State = userDTO.Address.State,
                         ZipCode = userDTO.Address.ZipCode
                     }
@@ -165,11 +165,24 @@ namespace Services.Layer.Account
 
                 var result = await _userManager.CreateAsync(user, userDTO.Password);
 
+                if (!result.Succeeded)
+                {
+                    return new Response<UserDTO>()
+                    {
+                        Data = null,
+                        Message = "User could not be created",
+                        Status = false,
+                        StatusCode = (int)HttpStatusCode.BadRequest,
+                        RedirectURL = null
+                    };
+                }
+
                 var response = new Response<UserDTO>()
                 {
                     Data = new UserDTO()
                     {
                         Id = user.Id,
+                        Token = await _tokenService.GenerateAccessToken(user),
                     },
                     Message = "Success",
                     Status = true,
@@ -189,7 +202,6 @@ namespace Services.Layer.Account
                     RedirectURL = null
                 };
             }
-
         }
     }
 }
