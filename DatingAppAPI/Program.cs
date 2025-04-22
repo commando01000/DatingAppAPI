@@ -4,6 +4,7 @@ using Data.Layer.Contexts;
 using Data.Layer.Entities.Identity;
 using DatingAppAPI.Extensions;
 using DatingAppAPI.Middlewares;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,9 +20,12 @@ namespace DatingAppAPI
 
             builder.Services.AddControllers();
 
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
             builder.Services.AddIdentityServices(builder.Configuration);
             builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddSwaggerServices(builder.Configuration);
+
 
             var app = builder.Build();
 
@@ -54,6 +58,12 @@ namespace DatingAppAPI
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            else if (app.Environment.IsProduction())
+            {
+                app.UseHsts();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

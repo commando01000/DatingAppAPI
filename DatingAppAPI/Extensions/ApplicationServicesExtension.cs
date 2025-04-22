@@ -1,6 +1,7 @@
 ﻿using Data.Layer.Contexts;
 using DatingAppAPI.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
 using Services.Layer.Account;
@@ -14,8 +15,16 @@ namespace DatingAppAPI.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             // 🔹 Add DbContext
+            //services.AddDbContext<AppDbContext>(options =>
+            //    options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(
+            config.GetConnectionString("DefaultConnection"),
+            sqlOptions => sqlOptions
+            .MigrationsAssembly("Data.Layer")
+            ));
+
 
             services.AddHttpContextAccessor();
 
@@ -33,7 +42,10 @@ namespace DatingAppAPI.Extensions
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
                     "http://localhost:4200",
                     "https://localhost:4200",
+                    "https://localhost:7120",
+                    "http://localhost:7120",
                     "http://localhost:3000",
+                    "https://supraa-dating-app.runasp.net",
                     "https://localhost:3000"); // angular and react
                 });
             });

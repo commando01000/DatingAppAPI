@@ -17,12 +17,12 @@ namespace DatingAppAPI.Extensions
                     {
                         Name = "Supraa",
                         Email = "jfijcc124@gmail.com",
-                        Url = new Uri("https://localhost:7120/")
+                        Url = new Uri(configuration["BaseUrl"])
                     }
                 });
                 options.AddServer(new OpenApiServer
                 {
-                    Url = "https://localhost:7120/",
+                    Url = configuration["BaseUrl"],
                     Description = "Dating App Server"
                 });
                 var securitySchema = new OpenApiSecurityScheme
