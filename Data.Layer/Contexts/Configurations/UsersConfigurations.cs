@@ -15,6 +15,11 @@ namespace Data.Layer.Contexts.Configurations
         {
             // add the address to the user
             builder.OwnsOne(x => x.Address, a => a.WithOwner());
+            // if a user is deleted, delete it's photos
+            builder.HasMany(x => x.Photos)
+                   .WithOne(p => p.AppUser)
+                   .HasForeignKey(p => p.AppUserId).IsRequired(true)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

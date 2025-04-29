@@ -1,8 +1,13 @@
-﻿using Common.Layer;
+﻿using AutoMapper;
+using Common.Layer;
 using Data.Layer.Contexts;
 using Data.Layer.Entities.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Repository.Layer.Interfaces;
+using Repository.Layer.Specifications.Users;
 using Services.Layer.DTOs;
 using Services.Layer.DTOs.Account;
 using Services.Layer.Identity;
@@ -11,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,63 +26,56 @@ namespace Services.Layer.Account
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUnitOfWork<AppDbContext> _unitOfWork;
 
-        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService)
+        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUnitOfWork<AppDbContext> unitOfWork)
         {
             _userManager = userManager;
             _tokenService = tokenService;
-        }
-        public async Task<Response<IEnumerable<UserDTO>>> GetAllUsers()
-        {
-            var users = _userManager.Users.ToList();
-
-            return new Response<IEnumerable<UserDTO>>()
-            {
-                Data = users.Select(x => new UserDTO()
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    Username = x.UserName,
-                    Bio = x.Bio,
-                    DisplayName = x.DisplayName,
-                    Address = x.Address == null ? null : new AddressDTO
-                    {
-                        City = x.Address.City,
-                        Street = x.Address.Street,
-                        Id = x.Address.Id,
-                        State = x.Address.State,
-                        ZipCode = x.Address.ZipCode
-                    }
-                }),
-                Message = "Success",
-                Status = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                RedirectURL = null
-            };
+            _httpContextAccessor = httpContextAccessor;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Response<UserDTO>> GetUserById(Guid id)
+        public string GetCurrentUserId()
         {
-            var user = _userManager.FindByIdAsync(id.ToString()).Result;
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("Id")?.Value;
+            return userId;
+        }
 
-            return new Response<UserDTO>()
+        public string GetCurrentUserEmail()
+        {
+            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
+        }
+
+        public string GetCurrentUsername()
+        {
+            return _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+        }
+
+        public async Task<Response<PaginatedResultDTO<UserDTO>>> GetUsersWithSpecs(UserSpecifications specs)
+        {
+            var UsersWithSpecs = new UserWithSpecifications(specs);
+
+            var users = await _unitOfWork.Repository<AppUser, string>().GetAllWithSpecs(UsersWithSpecs);
+
+            // Get count if you want to include total records (for pagination)
+            var totalCount = await _unitOfWork.Repository<AppUser, string>().GetCountAsync(UsersWithSpecs);
+
+            var mappedUsers = _mapper.Map<List<UserDTO>>(users);
+
+            var paginatedResult = new PaginatedResultDTO<UserDTO>(
+                totalCount,
+                specs.PageIndex,
+                specs.PageSize,
+                mappedUsers
+            );
+
+            return new Response<PaginatedResultDTO<UserDTO>>()
             {
-                Data = new UserDTO()
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    Username = user.UserName,
-                    Bio = user.Bio,
-                    DisplayName = user.DisplayName,
-                    Address = user.Address == null ? null : new AddressDTO
-                    {
-                        City = user.Address.City,
-                        Street = user.Address.Street,
-                        Id = user.Address.Id,
-                        State = user.Address.State,
-                        ZipCode = user.Address.ZipCode
-                    }
-                },
+                Data = paginatedResult,
                 Message = "Success",
                 Status = true,
                 StatusCode = (int)HttpStatusCode.OK,

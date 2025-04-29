@@ -1,12 +1,13 @@
 
-using Data.Layer;
 using Data.Layer.Contexts;
 using Data.Layer.Entities.Identity;
 using DatingAppAPI.Extensions;
 using DatingAppAPI.Middlewares;
 using Microsoft.AspNetCore.HttpOverrides;
+using Repository.Layer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Data.Layer;
 
 namespace DatingAppAPI
 {

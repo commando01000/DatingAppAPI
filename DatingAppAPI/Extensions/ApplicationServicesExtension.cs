@@ -1,11 +1,13 @@
 ﻿using Data.Layer.Contexts;
 using DatingAppAPI.Middlewares;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
 using Services.Layer.Account;
 using Services.Layer.Identity;
+using Services.Layer.Profiles;
 using Services.Layer.Token;
 
 namespace DatingAppAPI.Extensions
@@ -52,8 +54,12 @@ namespace DatingAppAPI.Extensions
 
             // 🔹 Register UnitOfWork with AppDbContext
             services.AddScoped(typeof(IUnitOfWork<AppDbContext>), typeof(UnitOfWork<AppDbContext>));
+            //services.AddScoped(typeof(IUnitOfWork<IdentityDbContext>), typeof(UnitOfWork<IdentityDbContext>));
 
             services.AddScoped<IAccountService, AccountService>(); // Register AccountService as a scoped service>
+
+            // Register AutoMappers
+            services.AddAutoMapper(typeof(UserProfile).Assembly);
 
             // 🔹 Register Services
             //services.AddAutoMapper(typeof(TicketProfile).Assembly);

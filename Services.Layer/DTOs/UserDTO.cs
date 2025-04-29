@@ -15,7 +15,12 @@ namespace Services.Layer.DTOs
         public string Token { get; set; }
         public string DisplayName { get; set; }
         public string Bio { get; set; }
-        public AddressDTO? Address { get; set; } // Nullable Address
-
+        public string? Gender { get; set; }
+        public string? Interests { get; set; }
+        public string? LookingFor { get; set; }
+        public int Age { get; set; }
+        public string? PhotoUrl { get; set; } // URL of the main photo
+        public AddressDTO? Address { get; set; }
+        public List<PhotoDTO> Photos { get; set; } = new();
     }
 }
