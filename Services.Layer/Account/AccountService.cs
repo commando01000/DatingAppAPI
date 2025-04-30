@@ -39,18 +39,18 @@ namespace Services.Layer.Account
             _mapper = mapper;
         }
 
-        public string GetCurrentUserId()
+        public async Task<string> GetCurrentUserId()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("Id")?.Value;
             return userId;
         }
 
-        public string GetCurrentUserEmail()
+        public async Task<string> GetCurrentUserEmail()
         {
             return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
         }
 
-        public string GetCurrentUsername()
+        public async Task<string> GetCurrentUsername()
         {
             return _httpContextAccessor.HttpContext?.User?.Identity?.Name;
         }

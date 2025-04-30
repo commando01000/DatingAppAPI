@@ -20,7 +20,10 @@ namespace Repository.Layer.Specifications.Users
         public DateOnly? MaxDob =>
             MinAge.HasValue ? DateOnly.FromDateTime(DateTime.Today.AddYears(-MinAge.Value)) : null;
 
-        public DateOnly? ExactDob =>
+        public DateOnly? ExactDobStart =>
+            Age.HasValue ? DateOnly.FromDateTime(DateTime.Today.AddYears(-Age.Value - 1).AddDays(1)) : null;
+
+        public DateOnly? ExactDobEnd =>
             Age.HasValue ? DateOnly.FromDateTime(DateTime.Today.AddYears(-Age.Value)) : null;
 
         public string? Interests { get; set; }

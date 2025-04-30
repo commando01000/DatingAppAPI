@@ -21,7 +21,7 @@ namespace DatingAppAPI.Controllers
             _accountService = accountService;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public async Task<IActionResult> users([FromQuery] UserSpecifications spec)
         {
@@ -33,7 +33,7 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthenticatedUserId()
         {
-            var Id = _accountService.GetCurrentUserId();
+            var Id = await _accountService.GetCurrentUserId();
             return Ok(Id);
         }
 
@@ -41,7 +41,7 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthenticatedUserName()
         {
-            var name = _accountService.GetCurrentUsername();
+            var name = await _accountService.GetCurrentUsername();
             return Ok(name);
         }
 
@@ -49,7 +49,7 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserEmail()
         {
-            var email = _accountService.GetCurrentUserEmail();
+            var email = await _accountService.GetCurrentUserEmail();
             return Ok(email);
         }
 
