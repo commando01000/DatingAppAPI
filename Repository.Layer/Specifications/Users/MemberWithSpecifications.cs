@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Repository.Layer.Specifications.Users
 {
-    public class UserWithSpecifications : BaseSpecifications<AppUser>
+    public class MemberWithSpecifications : BaseSpecifications<AppUser>
     {
-        public UserWithSpecifications(UserSpecifications spec)
+        public MemberWithSpecifications(MemberSpecifications spec)
        : base(user =>
-           (string.IsNullOrEmpty(spec.Search) || user.DisplayName.ToLower().Contains(spec.Search.ToLower())) &&
            (string.IsNullOrEmpty(spec.Id) || user.Id == spec.Id) &&
+           (string.IsNullOrEmpty(spec.Search) || user.DisplayName.ToLower().Contains(spec.Search.ToLower())) &&
            (string.IsNullOrEmpty(spec.Email) || user.Email == spec.Email) &&
            (string.IsNullOrEmpty(spec.Interests) || user.Interests.Contains(spec.Interests)) &&
            (string.IsNullOrEmpty(spec.LookingFor) || user.LookingFor.Contains(spec.LookingFor)) &&
@@ -28,11 +28,13 @@ namespace Repository.Layer.Specifications.Users
 
        )
         {
-            AddInclude(user => user.Photos);
-            AddInclude(user => user.Address);
+            if (!spec.PaginatedOnly)
+            {
+                AddInclude(user => user.Photos);
+            }
         }
 
-        public UserWithSpecifications(string id) : base(user => user.Id == id)
+        public MemberWithSpecifications(string id) : base(user => user.Id == id)
         {
 
         }

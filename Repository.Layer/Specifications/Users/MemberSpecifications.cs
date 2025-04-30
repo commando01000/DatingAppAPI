@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Repository.Layer.Specifications.Users
 {
-    public class UserSpecifications
+    public class MemberSpecifications
     {
         public string? Id { get; set; }
         public string? Email { get; set; }
         public int? Age { get; set; }
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
+        public bool PaginatedOnly { get; set; } = false;
 
         public DateOnly? MinDob =>
             MaxAge.HasValue ? DateOnly.FromDateTime(DateTime.Today.AddYears(-MaxAge.Value - 1).AddDays(1)) : null;

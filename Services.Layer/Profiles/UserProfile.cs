@@ -18,7 +18,7 @@ namespace Services.Layer.Profiles
             CreateMap<Address, AddressDTO>().ReverseMap();
 
             // Map between AppUser and UserDTO
-            CreateMap<AppUser, UserDTO>()
+            CreateMap<AppUser, MemberDTO>()
                 .ForMember(dest => dest.PhotoUrl, opt =>
                     opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain).Url))
                 .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Photos))

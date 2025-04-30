@@ -7,6 +7,7 @@ using Repository.Layer;
 using Repository.Layer.Interfaces;
 using Services.Layer.Account;
 using Services.Layer.Identity;
+using Services.Layer.Member;
 using Services.Layer.Profiles;
 using Services.Layer.Token;
 
@@ -57,6 +58,7 @@ namespace DatingAppAPI.Extensions
             //services.AddScoped(typeof(IUnitOfWork<IdentityDbContext>), typeof(UnitOfWork<IdentityDbContext>));
 
             services.AddScoped<IAccountService, AccountService>(); // Register AccountService as a scoped service>
+            services.AddScoped<IMemberService, MemberService>(); // Register AccountService as a scoped service>
 
             // Register AutoMappers
             services.AddAutoMapper(typeof(UserProfile).Assembly);

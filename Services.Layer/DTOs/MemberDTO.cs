@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Services.Layer.DTOs
 {
-    public class UserDTO
+    public class MemberDTO
     {
         public string Id { get; set; }
         public string Username { get; set; }

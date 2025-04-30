@@ -26,17 +26,13 @@ namespace Services.Layer.Account
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
-        private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IUnitOfWork<AppDbContext> _unitOfWork;
 
-        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUnitOfWork<AppDbContext> unitOfWork)
+        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<string> GetCurrentUserId()
@@ -53,34 +49,6 @@ namespace Services.Layer.Account
         public async Task<string> GetCurrentUsername()
         {
             return _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-        }
-
-        public async Task<Response<PaginatedResultDTO<UserDTO>>> GetUsersWithSpecs(UserSpecifications specs)
-        {
-            var UsersWithSpecs = new UserWithSpecifications(specs);
-
-            var users = await _unitOfWork.Repository<AppUser, string>().GetAllWithSpecs(UsersWithSpecs);
-
-            // Get count if you want to include total records (for pagination)
-            var totalCount = await _unitOfWork.Repository<AppUser, string>().GetCountAsync(UsersWithSpecs);
-
-            var mappedUsers = _mapper.Map<List<UserDTO>>(users);
-
-            var paginatedResult = new PaginatedResultDTO<UserDTO>(
-                totalCount,
-                specs.PageIndex,
-                specs.PageSize,
-                mappedUsers
-            );
-
-            return new Response<PaginatedResultDTO<UserDTO>>()
-            {
-                Data = paginatedResult,
-                Message = "Success",
-                Status = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                RedirectURL = null
-            };
         }
 
         public async Task<Response<Nothing>> LoginUser(LoginDTO userDTO)
@@ -140,7 +108,7 @@ namespace Services.Layer.Account
             };
         }
 
-        public async Task<Response<UserDTO>> RegisterUser(RegisterDTO userDTO)
+        public async Task<Response<MemberDTO>> RegisterUser(RegisterDTO userDTO)
         {
             var isUserExists = await _userManager.FindByEmailAsync(userDTO.Email);
             if (userDTO.Password == userDTO.RePassword && isUserExists == null) // check if passwords match and user does not exist
@@ -166,7 +134,7 @@ namespace Services.Layer.Account
 
                 if (!result.Succeeded)
                 {
-                    return new Response<UserDTO>()
+                    return new Response<MemberDTO>()
                     {
                         Data = null,
                         Message = "User could not be created",
@@ -176,9 +144,9 @@ namespace Services.Layer.Account
                     };
                 }
 
-                var response = new Response<UserDTO>()
+                var response = new Response<MemberDTO>()
                 {
-                    Data = new UserDTO()
+                    Data = new MemberDTO()
                     {
                         Id = user.Id,
                         Token = await _tokenService.GenerateAccessToken(user),
@@ -192,7 +160,7 @@ namespace Services.Layer.Account
             }
             else
             {
-                return new Response<UserDTO>()
+                return new Response<MemberDTO>()
                 {
                     Data = null,
                     Message = "Passwords do not match",

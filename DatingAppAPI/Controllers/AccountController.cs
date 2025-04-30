@@ -21,14 +21,6 @@ namespace DatingAppAPI.Controllers
             _accountService = accountService;
         }
 
-        //[Authorize]
-        [HttpGet]
-        public async Task<IActionResult> users([FromQuery] UserSpecifications spec)
-        {
-            var users = await _accountService.GetUsersWithSpecs(spec);
-            return Ok(users);
-        }
-
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAuthenticatedUserId()
