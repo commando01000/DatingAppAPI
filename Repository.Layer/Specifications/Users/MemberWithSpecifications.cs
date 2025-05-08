@@ -28,15 +28,12 @@ namespace Repository.Layer.Specifications.Users
 
        )
         {
-            if (!spec.PaginatedOnly)
-            {
-                AddInclude(user => user.Photos);
-            }
+            AddInclude(user => user.Photos);
         }
 
         public MemberWithSpecifications(string id) : base(user => user.Id == id)
         {
-
+            AddInclude(user => user.Photos);
         }
     }
 }

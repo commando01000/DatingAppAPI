@@ -27,8 +27,50 @@ namespace Services.Layer.Member
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<Response<MemberDTO>> GetMemberById(string Id)
+        {
+            var UserWithSpecs = new MemberWithSpecifications(Id);
+            var member = await _unitOfWork.Repository<AppUser, string>().GetWithSpecs(UserWithSpecs);
+
+            var mappedUser = _mapper.Map<MemberDTO>(member);
+
+            return new Response<MemberDTO>()
+            {
+                Data = mappedUser,
+                Message = "Success",
+                Status = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                RedirectURL = null
+            };
+        }
+
         public async Task<Response<PaginatedResultDTO<MemberDTO>>> GetMembersWithSpecs(MemberSpecifications specs)
         {
+            if (specs.Id != null)
+            {
+                var UserWithSpecs = new MemberWithSpecifications(specs.Id);
+
+                var member = await _unitOfWork.Repository<AppUser, string>().GetWithSpecs(UserWithSpecs);
+
+                var MappedUser = _mapper.Map<MemberDTO>(member);
+
+                var result = new PaginatedResultDTO<MemberDTO>(
+                 1,
+                 1,
+                 1,
+                 new List<MemberDTO>() { MappedUser }
+             );
+
+                return new Response<PaginatedResultDTO<MemberDTO>>()
+                {
+                    Data = result,
+                    Message = "Success",
+                    Status = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    RedirectURL = null
+                };
+            }
+
             var UsersWithSpecs = new MemberWithSpecifications(specs);
 
             var members = await _unitOfWork.Repository<AppUser, string>().GetAllWithSpecs(UsersWithSpecs);

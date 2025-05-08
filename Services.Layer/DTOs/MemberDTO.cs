@@ -14,6 +14,8 @@ namespace Services.Layer.DTOs
         public string Email { get; set; }
         public string Token { get; set; }
         public string DisplayName { get; set; }
+        public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public DateTime LastActive { get; set; } = DateTime.Now;
         public string Bio { get; set; }
         public string? Gender { get; set; }
         public string? Interests { get; set; }

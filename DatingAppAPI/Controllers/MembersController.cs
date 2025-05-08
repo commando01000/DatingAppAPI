@@ -17,7 +17,7 @@ namespace DatingAppAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> members([FromQuery] MemberSpecifications spec)
         {
             var members = await _memberService.GetMembersWithSpecs(spec);
