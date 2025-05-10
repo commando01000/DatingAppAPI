@@ -14,5 +14,6 @@ namespace Services.Layer.Member
         public Task<Response<PaginatedResultDTO<MemberDTO>>> GetMembersWithSpecs(MemberSpecifications userSpecifications);
 
         public Task<Response<MemberDTO>> GetMemberById(string Id);
+        public Task<Response<MemberDTO>> UpdateMember(MemberDTO memberDTO);
     }
 }

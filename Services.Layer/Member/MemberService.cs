@@ -3,6 +3,7 @@ using Common.Layer;
 using Data.Layer.Contexts;
 using Data.Layer.Entities.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Repository.Layer.Interfaces;
 using Repository.Layer.Specifications.Users;
 using Services.Layer.DTOs;
@@ -96,5 +97,65 @@ namespace Services.Layer.Member
             };
         }
 
+        public async Task<Response<MemberDTO>> UpdateMember(MemberDTO memberDTO)
+        {
+            try
+            {
+                // Retrieve the existing entity from the database
+                var existingMember = await _unitOfWork.Repository<AppUser, string>().Get(memberDTO.Id);
+
+                if (existingMember == null)
+                {
+                    return new Response<MemberDTO>
+                    {
+                        Data = null,
+                        Message = "Member not found.",
+                        Status = false,
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        RedirectURL = null
+                    };
+                }
+
+                // Map the updated fields
+                _mapper.Map(memberDTO, existingMember);
+
+                // Update the entity
+                var result = await _unitOfWork.Repository<AppUser, string>().Update(existingMember);
+
+                // Save changes
+                var res = await _unitOfWork.CompleteAsync();
+
+                return new Response<MemberDTO>
+                {
+                    Data = memberDTO,
+                    Message = "Success",
+                    Status = result,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    RedirectURL = null
+                };
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return new Response<MemberDTO>
+                {
+                    Data = null,
+                    Message = "Update failed due to concurrency issue: " + ex.Message,
+                    Status = false,
+                    StatusCode = (int)HttpStatusCode.Conflict,
+                    RedirectURL = null
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<MemberDTO>
+                {
+                    Data = null,
+                    Message = "Error: " + ex.Message,
+                    Status = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    RedirectURL = null
+                };
+            }
+        }
     }
 }
