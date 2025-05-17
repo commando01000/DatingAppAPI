@@ -20,7 +20,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Layer.Account
+namespace Services.Layer
 {
     public class AccountService : IAccountService
     {

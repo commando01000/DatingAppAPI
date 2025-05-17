@@ -5,9 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
+using Services.Layer;
 using Services.Layer.Account;
+using Services.Layer.Helpers;
 using Services.Layer.Identity;
 using Services.Layer.Member;
+using Services.Layer.Photo;
 using Services.Layer.Profiles;
 using Services.Layer.Token;
 
@@ -37,6 +40,8 @@ namespace DatingAppAPI.Extensions
 
             services.AddScoped<ITokenService, TokenService>();
 
+
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             // Register the CORS
             services.AddCors(opt =>
             {
@@ -58,6 +63,7 @@ namespace DatingAppAPI.Extensions
             //services.AddScoped(typeof(IUnitOfWork<IdentityDbContext>), typeof(UnitOfWork<IdentityDbContext>));
 
             services.AddScoped<IAccountService, AccountService>(); // Register AccountService as a scoped service>
+            services.AddScoped<IPhotoService, PhotoService>(); // Register PhotoService as a scoped service>
             services.AddScoped<IMemberService, MemberService>(); // Register AccountService as a scoped service>
 
             // Register AutoMappers
