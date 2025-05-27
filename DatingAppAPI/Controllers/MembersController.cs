@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Repository.Layer.Specifications.Users;
 using Services.Layer.DTOs;
 using Services.Layer.Member;
+using Services.Layer;
+using Common.Layer;
 
 namespace DatingAppAPI.Controllers
 {
@@ -12,9 +14,11 @@ namespace DatingAppAPI.Controllers
     public class MembersController : ControllerBase
     {
         private readonly IMemberService _memberService;
-        public MembersController(IMemberService memberService)
+        private readonly IPhotoService _photoService;
+        public MembersController(IMemberService memberService, IPhotoService photoService)
         {
             _memberService = memberService;
+            _photoService = photoService;
         }
 
         [HttpGet]
@@ -30,6 +34,14 @@ namespace DatingAppAPI.Controllers
         public async Task<IActionResult> update(MemberDTO memberDTO)
         {
             var result = await _memberService.UpdateMember(memberDTO);
+            return Ok(result);
+        }
+
+        // add photo service
+        [HttpPost]
+        public async Task<ActionResult<Response<PhotoDTO>>> AddPhoto(IFormFile file)
+        {
+            var result = await _photoService.AddPhotoAsync(file);
             return Ok(result);
         }
     }

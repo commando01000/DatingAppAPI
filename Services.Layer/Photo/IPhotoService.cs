@@ -1,16 +1,18 @@
 ﻿using CloudinaryDotNet.Actions;
+using Common.Layer;
 using Microsoft.AspNetCore.Http;
+using Services.Layer.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Layer.Photo
+namespace Services.Layer
 {
     public interface IPhotoService
     {
-        Task<ImageUploadResult> AddPhotoAsync(IFormFile file);
+        Task<Response<PhotoDTO>> AddPhotoAsync(IFormFile file);
         Task<DeletionResult> DeletePhotoAsync(string publicId);
     }
 }

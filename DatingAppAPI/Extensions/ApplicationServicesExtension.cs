@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
 using Services.Layer;
-using Services.Layer.Account;
+using Services.Layer;
 using Services.Layer.Helpers;
 using Services.Layer.Identity;
 using Services.Layer.Member;
-using Services.Layer.Photo;
+using Services.Layer;
 using Services.Layer.Profiles;
 using Services.Layer.Token;
 

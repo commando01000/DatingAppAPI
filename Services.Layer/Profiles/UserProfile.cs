@@ -34,6 +34,9 @@ namespace Services.Layer.Profiles
             CreateMap<AddressDTO, Address>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+            // Handle Photo updates specifically to avoid null overwrite
+            CreateMap<PhotoDTO, Photo>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
