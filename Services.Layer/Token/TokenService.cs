@@ -34,6 +34,7 @@ namespace Services.Layer.Token
                 new Claim(ClaimTypes.Name, user.DisplayName),
                 new Claim("Id", user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim("PhotoUrl", user.Photos.FirstOrDefault(x => x.IsMain)?.Url ?? string.Empty), // PhotoUrl
                 new Claim("Username", user.UserName),
             };
 

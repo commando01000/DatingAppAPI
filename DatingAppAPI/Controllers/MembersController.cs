@@ -44,5 +44,19 @@ namespace DatingAppAPI.Controllers
             var result = await _photoService.AddPhotoAsync(file);
             return Ok(result);
         }
+
+        [HttpPut]
+        public async Task<ActionResult<Response<PhotoDTO>>> SetMainPhoto(int photoId)
+        {
+            var result = await _photoService.SetMainPhoto(photoId);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<Response<PhotoDTO>>> DeletePhoto(string publicId)
+        {
+            var result = await _photoService.DeletePhotoAsync(publicId);
+            return Ok(result);
+        }
     }
 }

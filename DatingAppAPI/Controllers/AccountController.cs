@@ -25,7 +25,7 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthenticatedUserId()
         {
-            var Id = await _accountService.GetCurrentUserId();
+            var Id = _accountService.GetCurrentUserId();
             return Ok(Id);
         }
 
@@ -33,7 +33,7 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthenticatedUserName()
         {
-            var name = await _accountService.GetCurrentUsername();
+            var name = await _accountService.GetCurrentUserDisplayName();
             return Ok(name);
         }
 

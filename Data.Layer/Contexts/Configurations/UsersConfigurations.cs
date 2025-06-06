@@ -21,6 +21,5 @@ namespace Data.Layer.Contexts.Configurations
                    .HasForeignKey(p => p.AppUserId).IsRequired(true)
                    .OnDelete(DeleteBehavior.Cascade);
         }
-
     }
 }

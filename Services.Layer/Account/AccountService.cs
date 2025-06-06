@@ -26,29 +26,50 @@ namespace Services.Layer
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<AppUser> userManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
+        public AccountService(UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor, SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<string> GetCurrentUserId()
+        public string? GetCurrentUserId()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("Id")?.Value;
             return userId;
         }
 
-        public async Task<string> GetCurrentUserEmail()
+        public async Task<AppUser?> GetCurrentUserAsync()
         {
-            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
+            var userId = GetCurrentUserId();
+            return userId == null ? null : await _userManager.Users
+                .Include(u => u.Photos) // Optional: include related data
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<string> GetCurrentUsername()
+        public async Task<string?> GetCurrentUserDisplayName()
         {
-            return _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+            var user = await GetCurrentUserAsync();
+            return user?.DisplayName;
+        }
+
+        public async Task<string?> GetCurrentUserEmail()
+        {
+            var user = await GetCurrentUserAsync();
+            return user?.Email;
+        }
+
+        public async Task<string?> GetCurrentUserRole()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.FirstOrDefault();
         }
 
         public async Task<Response<Nothing>> LoginUser(LoginDTO userDTO)
@@ -65,7 +86,7 @@ namespace Services.Layer
                 };
             }
 
-            var user = await _userManager.FindByEmailAsync(userDTO.Email);
+            var user = await _userManager.Users.Include(u => u.Photos).FirstOrDefaultAsync(u => u.Email == userDTO.Email);
 
             if (user == null)
             {
@@ -93,6 +114,7 @@ namespace Services.Layer
                     Status = true,
                     Token = token,
                     StatusCode = (int)HttpStatusCode.OK,
+
                     RedirectURL = null
                     //RedirectURL = $"http://localhost:4200/external-login-callback?token={token}" // TODO: Change this in external login
                 };

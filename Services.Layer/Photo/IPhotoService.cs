@@ -14,5 +14,6 @@ namespace Services.Layer
     {
         Task<Response<PhotoDTO>> AddPhotoAsync(IFormFile file);
         Task<DeletionResult> DeletePhotoAsync(string publicId);
+        Task<Response<PhotoDTO>> SetMainPhoto(int publicId);
     }
 }

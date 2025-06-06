@@ -42,9 +42,7 @@ namespace Services.Layer
 
         public async Task<Response<PhotoDTO>> AddPhotoAsync(IFormFile file)
         {
-            var userId = await _accountService.GetCurrentUserId();
-
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _accountService.GetCurrentUserAsync();
 
             if (user == null) return new Response<PhotoDTO>()
             {
@@ -101,10 +99,91 @@ namespace Services.Layer
             };
         }
 
+        public async Task<Response<PhotoDTO>> SetMainPhoto(int photoId)
+        {
+            var user = await _accountService.GetCurrentUserAsync();
+
+            if (user == null) return new Response<PhotoDTO>()
+            {
+                Data = null,
+                Message = "User not found",
+                StatusCode = 404,
+                Status = false
+            };
+
+            if (user.Photos == null || !user.Photos.Any())
+            {
+                return new Response<PhotoDTO>()
+                {
+                    Data = null,
+                    Message = "User has no photos",
+                    StatusCode = 404,
+                    Status = false
+                };
+            }
+
+            var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+
+            if (photo == null) return new Response<PhotoDTO>()
+            {
+                Data = null,
+                Message = "Photo not found",
+                StatusCode = 404,
+                Status = false
+            };
+
+            if (photo.IsMain) return new Response<PhotoDTO>()
+            {
+                Data = null,
+                Message = "This is already your main photo",
+                StatusCode = 400,
+                Status = false
+            };
+
+            var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+
+            if (currentMain != null) currentMain.IsMain = false;
+
+            photo.IsMain = true;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded) return new Response<PhotoDTO>()
+            {
+                Data = null,
+                Message = "Problem setting main photo",
+                StatusCode = 400,
+                Status = false
+            };
+            else
+            {
+                var mappedPhoto = _mapper.Map<PhotoDTO>(photo);
+                return new Response<PhotoDTO>()
+                {
+                    Data = mappedPhoto,
+                    Message = "Main photo set successfully",
+                    StatusCode = 200,
+                    Status = true
+                };
+            }
+        }
+
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
-            var deleteParams = new DeletionParams(publicId);
+            var user = await _accountService.GetCurrentUserAsync();
+
+            if (user == null) return null;
+
+            var deleteParams = new DeletionParams(publicId.ToString());
+
+            var photo = user.Photos.FirstOrDefault(x => x.PublicId == publicId.ToString());
+
+            if (photo == null) return null;
+
+            user.Photos.Remove(photo);
+            await _userManager.UpdateAsync(user);
             return await _cloudinary.DestroyAsync(deleteParams);
         }
+
     }
 }
