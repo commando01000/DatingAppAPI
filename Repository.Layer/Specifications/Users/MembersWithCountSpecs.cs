@@ -1,5 +1,4 @@
 ﻿using Data.Layer.Entities.Identity;
-using Data.Layer.Helpers;
 using Repository.Layer.Specification;
 using System;
 using System.Collections.Generic;
@@ -9,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Repository.Layer.Specifications.Users
 {
-    public class MemberWithSpecifications : BaseSpecifications<AppUser>
+    public class MembersWithCountSpecs : BaseSpecifications<AppUser>
     {
-        public MemberWithSpecifications(MemberSpecifications spec)
+        public MembersWithCountSpecs(MemberSpecifications spec)
            : base(user =>
                (string.IsNullOrEmpty(spec.Id) || user.Id == spec.Id) &&
                (string.IsNullOrEmpty(spec.Search) || user.DisplayName.ToLower().Contains(spec.Search.ToLower())) &&
@@ -28,12 +27,7 @@ namespace Repository.Layer.Specifications.Users
 
            )
         {
-            AddInclude(user => user.Photos);
         }
 
-        public MemberWithSpecifications(string id) : base(user => user.Id == id)
-        {
-            AddInclude(user => user.Photos);
-        }
     }
 }
