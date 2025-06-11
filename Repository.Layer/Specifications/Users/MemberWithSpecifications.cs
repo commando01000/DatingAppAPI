@@ -28,7 +28,8 @@ namespace Repository.Layer.Specifications.Users
 
            )
         {
-            AddInclude(user => user.Photos);
+            // get only the main photo for every user
+            AddInclude(user => user.Photos.Where(p => p.IsMain));
         }
 
         public MemberWithSpecifications(string id) : base(user => user.Id == id)

@@ -76,7 +76,9 @@ namespace Services.Layer.Member
 
             var members = await _unitOfWork.Repository<AppUser, string>().GetAllWithSpecs(UsersWithSpecs);
 
-            var totalCount = await _unitOfWork.Repository<AppUser, string>().GetCountAsync(UsersWithSpecs); // For Pagination
+            var membersCount = new MembersWithCountSpecs(specs);
+
+            var totalCount = await _unitOfWork.Repository<AppUser, string>().GetCountAsync(membersCount); // For Pagination
 
             var mappedUsers = _mapper.Map<List<MemberDTO>>(members);
 

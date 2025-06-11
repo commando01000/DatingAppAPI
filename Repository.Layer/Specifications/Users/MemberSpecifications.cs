@@ -32,7 +32,7 @@ namespace Repository.Layer.Specifications.Users
         public string? Gender { get; set; }
 
         public string? Sort { get; set; }
-        public int pageSize { get; set; } = 6;
+        public int pageSize { get; set; } = 5;
         public int PageIndex { get; set; } = 1;
         private const int MaxPageSize = 50;
 
