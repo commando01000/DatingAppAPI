@@ -28,8 +28,8 @@ namespace Repository.Layer.Specifications.Users
 
            )
         {
-            // get only the main photo for every user
-            AddInclude(user => user.Photos.Where(p => p.IsMain));
+            AddInclude(user => user.Photos.Where(p => p.IsMain)); // get only the main photo for every user
+            ApplyPaging(spec.PageSize * (spec.PageIndex - 1), spec.PageSize);
         }
 
         public MemberWithSpecifications(string id) : base(user => user.Id == id)
