@@ -14,6 +14,7 @@ namespace Repository.Layer.Specifications.Users
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public bool PaginatedOnly { get; set; } = false;
+        public string OrderBy { get; set; } = "lastActive";
 
         public DateOnly? MinDob =>
             MaxAge.HasValue ? DateOnly.FromDateTime(DateTime.Today.AddYears(-MaxAge.Value - 1).AddDays(1)) : null;

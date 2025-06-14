@@ -13,6 +13,7 @@ using Services.Layer.Member;
 using Services.Layer;
 using Services.Layer.Profiles;
 using Services.Layer.Token;
+using Services.Layer.UserLikes;
 
 namespace DatingAppAPI.Extensions
 {
@@ -39,6 +40,8 @@ namespace DatingAppAPI.Extensions
             services.AddScoped<IAccountService, AccountService>();
 
             services.AddScoped<ITokenService, TokenService>();
+
+            services.AddScoped<IUserLikeService, UserLikeService>();
 
 
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));

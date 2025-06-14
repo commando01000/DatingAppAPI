@@ -1,4 +1,5 @@
-﻿using Data.Layer.Entities.Identity;
+﻿using Data.Layer.Entities;
+using Data.Layer.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,5 +20,7 @@ namespace Data.Layer.Contexts
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
+
+        public DbSet<UserLike> Likes { get; set; }
     }
 }
