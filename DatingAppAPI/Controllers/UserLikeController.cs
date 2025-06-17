@@ -48,10 +48,11 @@ namespace DatingAppAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetCurrentUserLikes([FromQuery] UserLikeSpecifications userLikeSpecifications)
+        public async Task<ActionResult<IEnumerable<string>>> GetCurrentUserLikesIds([FromQuery] UserLikeSpecifications userLikeSpecifications)
         {
             var SourceUserId = _accountService.GetCurrentUserId();
             userLikeSpecifications.SourceUserId = SourceUserId;
+            userLikeSpecifications.userId = SourceUserId;
             var result = await _userLikeService.GetCurrentUserLikeIds(userLikeSpecifications);
             return Ok(result);
         }
@@ -59,8 +60,14 @@ namespace DatingAppAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUserLikes([FromQuery] UserLikeSpecifications userLikeSpecifications)
         {
-            userLikeSpecifications.SourceUserId = _accountService.GetCurrentUserId();
-            userLikeSpecifications.userId = userLikeSpecifications.SourceUserId;
+            // You are the LikedUserId in this case
+            var currentUserId = _accountService.GetCurrentUserId();
+
+            userLikeSpecifications.userId = currentUserId;
+            userLikeSpecifications.SourceUserId = null; // optional
+            userLikeSpecifications.LikedUserId = null;  // optional
+            //userLikeSpecifications.predicate = "liked"; // VERY IMPORTANT
+
             var result = await _userLikeService.GetUserLikes(userLikeSpecifications);
             return Ok(result);
         }

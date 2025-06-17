@@ -75,16 +75,17 @@ namespace Services.Layer.UserLikes
             var users = await _unitOfWork.Repository<UserLike, string>().GetAllWithSpecs(UserLikeWithSpecs);
 
 
-            if(userLikeSpecifications.predicate == "liked")
+            if (userLikeSpecifications.predicate == "source")
             {
                 // use auto mapper
-                return _mapper.Map<IEnumerable<MemberDTO>>(users.Select(x => x.LikedUser));
+                var LikedUsers = users.Select(x => x.LikedUser).ToList();
+                return _mapper.Map<IEnumerable<MemberDTO>>(LikedUsers);
             }
             else
             {
-                return _mapper.Map<IEnumerable<MemberDTO>>(users.Select(x => x.SourceUser));
+                var SourceUsers = users.Select(x => x.SourceUser).ToList();
+                return _mapper.Map<IEnumerable<MemberDTO>>(SourceUsers);
             }
-            
         }
 
         public async Task<Response<Nothing>> RemoveLike(UserLikeDTO userLikeDTO)
