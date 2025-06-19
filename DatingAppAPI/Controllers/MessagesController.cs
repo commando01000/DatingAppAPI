@@ -1,0 +1,41 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Services.Layer;
+using Services.Layer.DTOs;
+using Services.Layer.Identity;
+
+namespace DatingAppAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class MessagesController : ControllerBase
+    {
+        private readonly IMessageService _messageService;
+        public MessagesController(IAccountService accountService, IMessageService messageService)
+        {
+            _messageService = messageService;
+        }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetMessages([FromQuery] MessageSpecifications messageSpecifications)
+        //{
+        //    var result = await _messageService.GetMessagesForUser(messageSpecifications);
+        //    return Ok(result);
+        //}
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMessage([FromBody] MessageDTO messageDTO)
+        {
+            var result = await _messageService.AddMessage(messageDTO);
+
+            if (result.Status)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
+    }
+}

@@ -1,16 +1,12 @@
 ﻿using Data.Layer.Contexts;
 using DatingAppAPI.Middlewares;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
-using Services.Layer;
 using Services.Layer;
 using Services.Layer.Helpers;
 using Services.Layer.Identity;
 using Services.Layer.Member;
-using Services.Layer;
 using Services.Layer.Profiles;
 using Services.Layer.Token;
 using Services.Layer.UserLikes;
@@ -42,6 +38,7 @@ namespace DatingAppAPI.Extensions
             services.AddScoped<ITokenService, TokenService>();
 
             services.AddScoped<IUserLikeService, UserLikeService>();
+            services.AddScoped<IMessageService, MessageService>();
 
 
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
@@ -71,6 +68,8 @@ namespace DatingAppAPI.Extensions
 
             // Register AutoMappers
             services.AddAutoMapper(typeof(UserProfile).Assembly);
+            services.AddAutoMapper(typeof(UserLikeProfile).Assembly);
+            services.AddAutoMapper(typeof(MessageProfile).Assembly);
 
             // 🔹 Register Services
             //services.AddAutoMapper(typeof(TicketProfile).Assembly);

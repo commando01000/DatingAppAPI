@@ -24,6 +24,8 @@ namespace Data.Layer.Entities.Identity
 
         public List<UserLike> LikedByUsers { get; set; } = new();
         public List<UserLike> LikedUsers { get; set; } = new();
+        public List<Message> MessagesSent { get; set; } = new();
+        public List<Message> MessagesReceived { get; set; } = new();
     }
 
     [Table("Photos")]
