@@ -28,6 +28,7 @@ namespace Services.Layer.Profiles
             CreateMap<MessageDTO, Message>()
                 .ForMember(dest => dest.Sender, opt => opt.Ignore())
                 .ForMember(dest => dest.Recipient, opt => opt.Ignore());
+
         }
     }
 }

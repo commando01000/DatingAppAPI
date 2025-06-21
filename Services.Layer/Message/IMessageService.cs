@@ -1,4 +1,5 @@
 ﻿using Common.Layer;
+using Repository.Layer.Specifications.Messages;
 using Services.Layer.DTOs;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace Services.Layer
     {
         Task<Response<MessageDTO>> AddMessage(MessageDTO message);
         void DeleteMessage(MessageDTO message);
-        Task<MessageDTO> GetMessage(string id);
-        Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser();
-        Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername);
+        Task<MessageDTO> GetMessage(int id);
+        Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser(MessageSpecification messageSpecification);
+        //Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername);
     }
 }

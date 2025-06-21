@@ -3,8 +3,10 @@ using Common.Layer;
 using Data.Layer.Contexts;
 using Data.Layer.Entities;
 using Data.Layer.Entities.Identity;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Repository.Layer.Interfaces;
+using Repository.Layer.Specifications.Messages;
 using Services.Layer.DTOs;
 using Services.Layer.Identity;
 using System;
@@ -93,19 +95,50 @@ namespace Services.Layer
             throw new NotImplementedException();
         }
 
-        public Task<MessageDTO> GetMessage(string id)
+        public Task<MessageDTO> GetMessage(int id)
         {
-            throw new NotImplementedException();
+            var MessageWithSpecs = new MessageWithSpecifications(id);
+
+            var message = _unitOfWork.Repository<Message, string>().GetWithSpecs(MessageWithSpecs);
+
+            return _mapper.Map<Task<MessageDTO>>(message);
         }
 
-        public Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser()
+        public async Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser(MessageSpecification messageParams)
         {
-            throw new NotImplementedException();
-        }
+            var MessagesWithSpecs = new MessageWithSpecifications(messageParams);
+            var MessagesWithCountSpecs = new MessageWithCountSpecification(messageParams);
 
-        public Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername)
-        {
-            throw new NotImplementedException();
+            var MessagesCount = await _unitOfWork.Repository<Message, string>().GetCountAsync(MessagesWithSpecs);
+
+            var messages = await _unitOfWork.Repository<Message, string>().GetAllWithSpecs(MessagesWithSpecs);
+
+            var MappedMessages = _mapper.Map<IEnumerable<MessageDTO>>(messages); // Mapped
+
+            var PaginatedResult = new PaginatedResultDTO<MessageDTO>(MessagesCount, messageParams.PageIndex, messageParams.PageSize, MappedMessages);
+
+            if (messages != null)
+            {
+                foreach (var message in messages)
+                {
+                    if (!message.IsRead)
+                    {
+                        try
+                        {
+                            message.IsRead = true;
+                            message.DateRead = DateTime.UtcNow;
+                            var res = await _unitOfWork.Repository<Message, string>().Update(message);
+                            var isSaved = await _unitOfWork.CompleteAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+                    }
+                }
+            }
+
+            return PaginatedResult;
         }
     }
 }

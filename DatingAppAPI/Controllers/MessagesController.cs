@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Layer.Specifications.Messages;
 using Services.Layer;
 using Services.Layer.DTOs;
 using Services.Layer.Identity;
@@ -11,9 +12,11 @@ namespace DatingAppAPI.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IMessageService _messageService;
+        private readonly IAccountService _accountService;
         public MessagesController(IAccountService accountService, IMessageService messageService)
         {
             _messageService = messageService;
+            _accountService = accountService;
         }
 
         //[HttpGet]
@@ -36,6 +39,14 @@ namespace DatingAppAPI.Controllers
             {
                 return BadRequest(result);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMessagesForUser([FromQuery] MessageSpecification messageSpecifications)
+        {
+            messageSpecifications.UserId = _accountService.GetCurrentUserId();
+            var result = await _messageService.GetMessagesForUser(messageSpecifications);
+            return Ok(result);
         }
     }
 }
