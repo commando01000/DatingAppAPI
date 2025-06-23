@@ -17,7 +17,11 @@ namespace Repository.Layer.Specifications.Messages
         (string.IsNullOrEmpty(specs.RecipientId) || msg.RecipientId == specs.RecipientId) &&
         (string.IsNullOrEmpty(specs.RecipientUsername) || msg.RecipientUsername == specs.RecipientUsername) &&
         (string.IsNullOrEmpty(specs.SenderUsername) || msg.SenderUsername == specs.SenderUsername) &&
-        (!specs.MessageSent.HasValue || msg.MessageSent == specs.MessageSent))
+        (!specs.MessageSent.HasValue || msg.MessageSent == specs.MessageSent) &&
+        (specs.Container == "Inbox" ? msg.RecipientId == specs.UserId :
+        specs.Container == "Outbox" ? msg.SenderId == specs.UserId : specs.Container == "Unread" ? msg.RecipientId == specs.UserId && !msg.IsRead : false)
+
+        )
 
         {
 
