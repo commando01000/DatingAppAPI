@@ -177,5 +177,42 @@ namespace Services.Layer
 
             return PaginatedResult;
         }
+
+        public async Task<PaginatedResultDTO<MessageDTO>> GetMessagesThread(MessageSpecification messageParams)
+        {
+            var MessagesWithSpecs = new MessageWithSpecifications(messageParams.SenderId, messageParams.RecipientId);
+            var MessagesWithCountSpecs = new MessageWithCountSpecification(messageParams);
+
+            var MessagesCount = await _unitOfWork.Repository<Message, string>().GetCountAsync(MessagesWithSpecs);
+
+            var messages = await _unitOfWork.Repository<Message, string>().GetAllWithSpecs(MessagesWithSpecs);
+
+            var MappedMessages = _mapper.Map<IEnumerable<MessageDTO>>(messages); // Mapped
+
+            var PaginatedResult = new PaginatedResultDTO<MessageDTO>(MessagesCount, messageParams.PageIndex, messageParams.PageSize, MappedMessages);
+
+            if (messages != null)
+            {
+                foreach (var message in messages)
+                {
+                    if (!message.IsRead)
+                    {
+                        try
+                        {
+                            message.IsRead = true;
+                            message.DateRead = DateTime.UtcNow;
+                            var res = await _unitOfWork.Repository<Message, string>().Update(message);
+                            var isSaved = await _unitOfWork.CompleteAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+                    }
+                }
+            }
+
+            return PaginatedResult;
+        }
     }
 }

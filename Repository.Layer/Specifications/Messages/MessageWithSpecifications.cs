@@ -45,5 +45,12 @@ namespace Repository.Layer.Specifications.Messages
             AddInclude(msg => msg.Sender.Photos.Where(p => p.IsMain));
             AddInclude(msg => msg.Recipient.Photos.Where(p => p.IsMain));
         }
+
+        public MessageWithSpecifications(string SenderId, string RecipientId) : base(msg => (msg.SenderId == SenderId && msg.RecipientId == RecipientId) || (msg.RecipientId == SenderId && msg.SenderId == RecipientId))
+        {
+            AddInclude(msg => msg.Sender.Photos.Where(p => p.IsMain));
+            AddInclude(msg => msg.Recipient.Photos.Where(p => p.IsMain));
+            AddOrderByAsc(msg => msg.MessageSent); // sort by date
+        }
     }
 }

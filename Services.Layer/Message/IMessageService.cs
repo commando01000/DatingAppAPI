@@ -15,6 +15,8 @@ namespace Services.Layer
         Task<Response<Nothing>> DeleteMessage(int id);
         Task<MessageDTO> GetMessage(int id);
         Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser(MessageSpecification messageSpecification);
+        Task<PaginatedResultDTO<MessageDTO>> GetMessagesThread(MessageSpecification messageSpecification);
+
         //Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername);
     }
 }
