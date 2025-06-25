@@ -48,6 +48,7 @@ namespace DatingAppAPI.Controllers
             var result = await _messageService.GetMessagesForUser(messageSpecifications);
             return Ok(result);
         }
+
         [HttpGet]
         public async Task<IActionResult> GetMessagesThread([FromQuery] MessageSpecification messageSpecifications)
         {
