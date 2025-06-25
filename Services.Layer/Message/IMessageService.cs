@@ -12,7 +12,7 @@ namespace Services.Layer
     public interface IMessageService
     {
         Task<Response<MessageDTO>> AddMessage(MessageDTO message);
-        void DeleteMessage(MessageDTO message);
+        Task<Response<Nothing>> DeleteMessage(int id);
         Task<MessageDTO> GetMessage(int id);
         Task<PaginatedResultDTO<MessageDTO>> GetMessagesForUser(MessageSpecification messageSpecification);
         //Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername);

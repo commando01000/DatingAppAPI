@@ -48,5 +48,12 @@ namespace DatingAppAPI.Controllers
             var result = await _messageService.GetMessagesForUser(messageSpecifications);
             return Ok(result);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMessage(int messageId)
+        {
+            var result = await _messageService.DeleteMessage(messageId);
+            return Ok(result);
+        }
     }
 }

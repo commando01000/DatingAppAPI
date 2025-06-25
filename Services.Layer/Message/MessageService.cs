@@ -90,9 +90,46 @@ namespace Services.Layer
             }
         }
 
-        public void DeleteMessage(MessageDTO message)
+        public async Task<Response<Nothing>> DeleteMessage(int Id)
         {
-            throw new NotImplementedException();
+            var message = await _unitOfWork.Repository<Message, int>().Get(Id);
+            var user = _accountService.GetCurrentUserId();
+
+            if (message.SenderId != user && message.RecipientId != user)
+            {
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "You cannot delete this message",
+                    Status = false,
+                    StatusCode = 400
+                };
+            }
+
+            if (message != null)
+            {
+                message.SenderDeleted = true;
+                message.RecipientDeleted = true;
+                var res = await _unitOfWork.Repository<Message, int>().Delete(message);
+                var isSaved = await _unitOfWork.CompleteAsync();
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "Message deleted successfully",
+                    Status = true,
+                    StatusCode = 200
+                };
+            }
+            else
+            {
+                return new Response<Nothing>()
+                {
+                    Data = null,
+                    Message = "Message not found",
+                    Status = false,
+                    StatusCode = 404
+                };
+            }
         }
 
         public Task<MessageDTO> GetMessage(int id)
