@@ -47,7 +47,8 @@ namespace DatingAppAPI.Extensions
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
+                    policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().
+                    WithOrigins(
                     "http://localhost:4200",
                     "https://localhost:4200",
                     "https://localhost:7120",
@@ -65,6 +66,9 @@ namespace DatingAppAPI.Extensions
             services.AddScoped<IAccountService, AccountService>(); // Register AccountService as a scoped service>
             services.AddScoped<IPhotoService, PhotoService>(); // Register PhotoService as a scoped service>
             services.AddScoped<IMemberService, MemberService>(); // Register AccountService as a scoped service>
+
+            // Signal R
+            services.AddSignalR();
 
             // Register AutoMappers
             services.AddAutoMapper(typeof(UserProfile).Assembly);

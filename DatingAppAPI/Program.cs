@@ -8,6 +8,7 @@ using Repository.Layer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Data.Layer;
+using DatingAppAPI.SignalR;
 
 namespace DatingAppAPI
 {
@@ -76,6 +77,7 @@ namespace DatingAppAPI
             app.UseAuthentication(); // Ensure this comes before Use Authorization
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<PresenceHub>("hubs/presence");
 
             app.Run();
         }
