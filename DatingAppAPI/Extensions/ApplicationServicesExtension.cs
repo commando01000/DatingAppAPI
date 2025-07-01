@@ -1,5 +1,6 @@
 ﻿using Data.Layer.Contexts;
 using DatingAppAPI.Middlewares;
+using DatingAppAPI.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Repository.Layer;
 using Repository.Layer.Interfaces;
@@ -40,6 +41,8 @@ namespace DatingAppAPI.Extensions
             services.AddScoped<IUserLikeService, UserLikeService>();
             services.AddScoped<IMessageService, MessageService>();
 
+
+            services.AddSingleton<PresenceTracker>();
 
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             // Register the CORS

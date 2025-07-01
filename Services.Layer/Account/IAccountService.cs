@@ -13,6 +13,7 @@ namespace Services.Layer.Identity
         public string? GetCurrentUserId();
         public Task<AppUser?> GetCurrentUserAsync();
         public Task<string?> GetCurrentUserDisplayName();
+        public Task<string?> GetCurrentUserUsername();
         public Task<string?> GetCurrentUserEmail();
         public Task<string?> GetCurrentUserRole();
     }

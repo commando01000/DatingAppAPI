@@ -43,6 +43,7 @@ namespace Services.Layer
             return userId;
         }
 
+
         public async Task<AppUser?> GetCurrentUserAsync()
         {
             var userId = GetCurrentUserId();
@@ -55,6 +56,12 @@ namespace Services.Layer
         {
             var user = await GetCurrentUserAsync();
             return user?.DisplayName;
+        }
+
+        public async Task<string?> GetCurrentUserUsername()
+        {
+            var user = await GetCurrentUserAsync();
+            return user?.UserName;
         }
 
         public async Task<string?> GetCurrentUserEmail()
